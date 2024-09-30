@@ -10,7 +10,6 @@ import (
 )
 
 type Services struct {
-	JWTService  JWTService
 	AuthService AuthService
 }
 
@@ -19,8 +18,9 @@ func Setup(viperCfg *viper.Viper,
 	validator *validator.Validate,
 	logger *logrus.Logger,
 	repositories *repository.Repositories) *Services {
+	JWTService := NewJwtService(viperCfg, db, logger, repositories)
+
 	return &Services{
-		JWTService:  NewJwtService(viperCfg, db, logger, repositories),
-		AuthService: NewAuthService(db, validator, logger, repositories),
+		AuthService: NewAuthService(db, validator, logger, JWTService, repositories),
 	}
 }

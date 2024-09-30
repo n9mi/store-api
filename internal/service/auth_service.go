@@ -18,6 +18,7 @@ import (
 
 type AuthService interface {
 	Register(ctx context.Context, request *dto.RegisterRequest) error
+	Login(ctx context.Context, request *dto.LoginRequest) (*dto.LoginDTO, error)
 }
 
 type AuthServiceImpl struct {
@@ -26,13 +27,15 @@ type AuthServiceImpl struct {
 	Logger         *logrus.Logger
 	UserRepository *repository.UserRepository
 	RoleRepository *repository.RoleRepository
+	JWTService     JWTService
 }
 
-func NewAuthService(db *gorm.DB, validator *validator.Validate, logger *logrus.Logger, repositories *repository.Repositories) *AuthServiceImpl {
+func NewAuthService(db *gorm.DB, validator *validator.Validate, logger *logrus.Logger, JWTService JWTService, repositories *repository.Repositories) *AuthServiceImpl {
 	return &AuthServiceImpl{
 		DB:             db,
 		Validator:      validator,
 		Logger:         logger,
+		JWTService:     JWTService,
 		UserRepository: repositories.UserRepository,
 		RoleRepository: repositories.RoleRepository,
 	}
@@ -73,7 +76,7 @@ func (s *AuthServiceImpl) Register(ctx context.Context, request *dto.RegisterReq
 
 	// if user doens't exists yet, create a new one. if user already exists, assigned to the specified role.
 	if len(user.ID) == 0 {
-		userPwd, err := util.NewUserPassword(request.Password)
+		userPwd, err := util.HashUserPassword(request.Password)
 		if err != nil {
 			s.Logger.Warnf("register failed: failed to generate password")
 			return fiber.ErrInternalServerError
@@ -112,4 +115,51 @@ func (s *AuthServiceImpl) Register(ctx context.Context, request *dto.RegisterReq
 	}
 
 	return nil
+}
+
+func (s *AuthServiceImpl) Login(ctx context.Context, request *dto.LoginRequest) (*dto.LoginDTO, error) {
+	if err := s.Validator.Struct(request); err != nil {
+		s.Logger.Warnf("request validation failed : %+v", err)
+		return nil, err
+	}
+
+	user := new(entity.User)
+	if err := s.UserRepository.FindByEmail(s.DB, user, request.Email); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			s.Logger.Warnf("user not found : %+v", err)
+			return nil, fiber.NewError(fiber.StatusUnauthorized, "user doesn't exists")
+		}
+
+		s.Logger.Warnf("login failed : %+v", err)
+		return nil, err
+	}
+
+	if !util.IsUserPasswordValid(user.Password, request.Password) {
+		s.Logger.Warnf("login failed : password doesn't patch")
+		return nil, fiber.NewError(fiber.StatusUnauthorized, "user doesn't exists")
+	}
+
+	roleID := fmt.Sprintf("role_%s", request.AsRole)
+	if r, _ := s.UserRepository.HasRole(s.DB, user.ID, roleID); !r {
+		s.Logger.Warnf("login failed : role doesn't match")
+		return nil, fiber.NewError(fiber.StatusUnauthorized, "user doesn't exists")
+	}
+
+	authDTO := dto.AuthDTO{
+		UserID:          user.ID,
+		UserEmail:       user.Email,
+		UserName:        user.Name,
+		UserCurrentRole: roleID,
+	}
+
+	loginDTO := new(dto.LoginDTO)
+	var err error
+	if loginDTO.AccessToken, _, err = s.JWTService.GenerateAccessToken(&authDTO); err != nil {
+		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to generate token")
+	}
+	if loginDTO.RefreshToken, loginDTO.RefreshTokenExpiredUnix, err = s.JWTService.GenerateRefreshToken(&authDTO); err != nil {
+		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to generate token")
+	}
+
+	return loginDTO, nil
 }

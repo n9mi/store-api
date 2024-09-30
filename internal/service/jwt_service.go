@@ -80,7 +80,7 @@ func (s *JWTServiceImpl) parseJWTToken(key string, token string) (*dto.AuthDTO, 
 	})
 	if err != nil {
 		s.Logger.Warnf("failed to parse token : %+v", err)
-		return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid token")
+		return nil, err
 	}
 
 	claims := t.Claims.(jwt.MapClaims)

@@ -80,7 +80,7 @@ func SeedUsers(db *gorm.DB, repositories *repository.Repositories, roles []entit
 	defer util.RecoverRollback(tx)
 	for _, r := range roles {
 		for i := 1; i <= numPerRole; i++ {
-			userPwd, _ := util.NewUserPassword("password")
+			userPwd, _ := util.HashUserPassword("password")
 			user := entity.User{
 				ID:       uuid.NewString(),
 				Name:     fmt.Sprintf("%s %d", r.Name, i),

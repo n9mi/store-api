@@ -34,4 +34,5 @@ func (c *Router) Setup() {
 func (c *Router) SetupAuthRoute(route fiber.Router) {
 	auth := route.Group("/auth")
 	auth.Post("/register", c.ControllerSetup.AuthController.Register)
+	auth.Post("/login", c.ControllerSetup.AuthController.Login)
 }

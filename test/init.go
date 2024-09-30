@@ -1,6 +1,9 @@
 package test
 
-import "store-api/config"
+import (
+	"store-api/config"
+	"store-api/internal/repository"
+)
 
 var testCfg config.ConfigBootstrap
 
@@ -17,6 +20,14 @@ type pagination struct {
 	CurrentPage int `json:"current_page"`
 	TotalPage   int `json:"total_page"`
 	PageSize    int `json:"page_size"`
+}
+
+var repositories *repository.Repositories
+
+var validCustomer = map[string]any{
+	"name":     "test customer",
+	"email":    "customer@test.com",
+	"password": "password",
 }
 
 func init() {
@@ -37,6 +48,9 @@ func init() {
 		Logger:    logger,
 		DB:        db,
 		Validator: validator,
+		ViperCfg:  viperCfg,
 	}
 	config.Bootstrap(&testCfg)
+
+	repositories = repository.Setup()
 }

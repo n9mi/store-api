@@ -23,6 +23,7 @@ func main() {
 		Logger:    logger,
 		DB:        db,
 		Validator: validator,
+		ViperCfg:  viperCfg,
 	}
 	config.Bootstrap(&cfg)
 
