@@ -21,7 +21,24 @@ func TestRegister(t *testing.T) {
 			"request_email":    "customer@test.com",
 			"request_password": "password",
 			"request_as_role":  "customer",
-			"response_status":  "success",
+			"response_code":    fiber.StatusOK,
+			"response_status":  "SUCCESS",
+		},
+		"register_validation": {
+			"request_name":     "",
+			"request_email":    "",
+			"request_password": "",
+			"request_as_role":  "",
+			"response_code":    fiber.StatusBadRequest,
+			"response_status":  "BAD_REQUEST",
+		},
+		"register_duplicate": {
+			"request_name":     "test customer",
+			"request_email":    "customer@test.com",
+			"request_password": "password",
+			"request_as_role":  "customer",
+			"response_code":    fiber.StatusConflict,
+			"response_status":  "CONFLICT",
 		},
 	}
 
@@ -36,7 +53,7 @@ func TestRegister(t *testing.T) {
 
 			response, err := testCfg.App.Test(request)
 			require.Nil(t, err)
-			require.Equal(t, fiber.StatusOK, response.StatusCode)
+			require.Equal(t, testItem["response_code"], response.StatusCode)
 
 			responseBodyByte, err := io.ReadAll(response.Body)
 			require.Nil(t, err)

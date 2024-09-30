@@ -32,7 +32,7 @@ func (ct *AuthController) Register(c *fiber.Ctx) error {
 	}
 
 	response := dto.Response[any]{
-		Status: "success",
+		Status: "SUCCESS",
 		Messages: map[string]string{
 			"_success": "user registration success",
 		},

@@ -12,7 +12,7 @@ func NewCustomErrorHandler() func(*fiber.Ctx, error) error {
 	return func(c *fiber.Ctx, err error) error {
 		if err != nil {
 			defResp := dto.Response[any]{
-				Status:     "failed",
+				Status:     "INTERNAL_SERVER_ERROR",
 				Messages:   make(map[string]string),
 				Data:       nil,
 				Pagination: nil,
@@ -21,7 +21,7 @@ func NewCustomErrorHandler() func(*fiber.Ctx, error) error {
 
 			if errConv, ok := err.(validator.ValidationErrors); ok {
 				code = fiber.StatusBadRequest
-
+				defResp.Status = "BAD_REQUEST"
 				for _, errItem := range errConv {
 					switch errItem.Tag() {
 					case "required":
@@ -40,7 +40,14 @@ func NewCustomErrorHandler() func(*fiber.Ctx, error) error {
 				}
 			} else if errConv, ok := err.(*fiber.Error); ok {
 				code = errConv.Code
-
+				switch code {
+				case fiber.StatusBadRequest:
+					defResp.Status = "BAD_REQUEST"
+				case fiber.StatusConflict:
+					defResp.Status = "CONFLICT"
+				default:
+					defResp.Status = "FAILED"
+				}
 				defResp.Messages["_error"] = errConv.Message
 			} else {
 				defResp.Messages["_error"] = "something wrong"
