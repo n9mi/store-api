@@ -87,29 +87,29 @@ func (s *JWTServiceImpl) parseJWTToken(key string, token string) (*dto.AuthDTO, 
 	authDTOMap, ok := claims["data"].(map[string]interface{})
 	if !ok {
 		s.Logger.Warnf("failed to parse token : %+v", err)
-		return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid token")
+		return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid_token")
 	}
 
 	var authDTO dto.AuthDTO
 	authDTO.UserID, ok = authDTOMap["UserID"].(string)
 	if !ok {
 		s.Logger.Warnf("failed to parse UserID from token : %+v", err)
-		return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid token")
+		return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid_token")
 	}
 	authDTO.UserEmail, ok = authDTOMap["UserEmail"].(string)
 	if !ok {
 		s.Logger.Warnf("failed to parse UserEmail from token : %+v", err)
-		return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid token")
+		return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid_token")
 	}
 	authDTO.UserName, ok = authDTOMap["UserName"].(string)
 	if !ok {
 		s.Logger.Warnf("failed to parse UserName from token : %+v", err)
-		return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid token")
+		return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid_token")
 	}
 	authDTO.UserCurrentRole, ok = authDTOMap["UserCurrentRole"].(string)
 	if !ok {
 		s.Logger.Warnf("failed to parse UserCurrentRole from token : %+v", err)
-		return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid token")
+		return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid_token")
 	}
 
 	return &authDTO, nil

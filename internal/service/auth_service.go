@@ -19,6 +19,7 @@ import (
 type AuthService interface {
 	Register(ctx context.Context, request *dto.RegisterRequest) error
 	Login(ctx context.Context, request *dto.LoginRequest) (*dto.LoginDTO, error)
+	ValidateAuthData(authDTO *dto.AuthDTO) error
 }
 
 type AuthServiceImpl struct {
@@ -139,8 +140,7 @@ func (s *AuthServiceImpl) Login(ctx context.Context, request *dto.LoginRequest) 
 		return nil, fiber.NewError(fiber.StatusUnauthorized, "user doesn't exists")
 	}
 
-	roleID := fmt.Sprintf("role_%s", request.AsRole)
-	if r, _ := s.UserRepository.HasRole(s.DB, user.ID, roleID); !r {
+	if r, _ := s.UserRepository.HasRole(s.DB, user.ID, fmt.Sprintf("role_%s", request.AsRole)); !r {
 		s.Logger.Warnf("login failed : role doesn't match")
 		return nil, fiber.NewError(fiber.StatusUnauthorized, "user doesn't exists")
 	}
@@ -149,7 +149,7 @@ func (s *AuthServiceImpl) Login(ctx context.Context, request *dto.LoginRequest) 
 		UserID:          user.ID,
 		UserEmail:       user.Email,
 		UserName:        user.Name,
-		UserCurrentRole: roleID,
+		UserCurrentRole: request.AsRole,
 	}
 
 	loginDTO := new(dto.LoginDTO)
@@ -162,4 +162,34 @@ func (s *AuthServiceImpl) Login(ctx context.Context, request *dto.LoginRequest) 
 	}
 
 	return loginDTO, nil
+}
+
+func (s *AuthServiceImpl) ValidateAuthData(authDTO *dto.AuthDTO) error {
+	user := new(entity.User)
+	if err := s.UserRepository.FindByEmail(s.DB, user, authDTO.UserEmail); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			s.Logger.Warnf("user not found : %+v", err)
+			return fiber.NewError(fiber.StatusUnauthorized, "invalid_authorization_data")
+		}
+
+		s.Logger.Warnf("auth dto validation failed : %+v", err)
+		return err
+	}
+
+	roleID := fmt.Sprintf("role_%s", authDTO.UserCurrentRole)
+	if r, _ := s.UserRepository.HasRole(s.DB, user.ID, roleID); !r {
+		s.Logger.Warnf("auth dto validation failed : role doesn't match")
+		return fiber.NewError(fiber.StatusUnauthorized, "invalid_authorization_data")
+	}
+
+	if user.ID != authDTO.UserID {
+		s.Logger.Warnf("auth dto validation failed : user id doesn't match")
+		return fiber.NewError(fiber.StatusUnauthorized, "invalid_authorization_data")
+	}
+	if user.Name != authDTO.UserName {
+		s.Logger.Warnf("auth dto validation failed : user id doesn't match")
+		return fiber.NewError(fiber.StatusUnauthorized, "invalid_authorization_data")
+	}
+
+	return nil
 }

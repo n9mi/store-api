@@ -42,6 +42,7 @@ func init() {
 		logger.Fatalf("failed to create database : %+v", err)
 	}
 	validator := config.NewValidator(viperCfg)
+	enforcer := config.NewTestEnforcer(logger)
 
 	testCfg = config.ConfigBootstrap{
 		App:       app,
@@ -49,6 +50,7 @@ func init() {
 		DB:        db,
 		Validator: validator,
 		ViperCfg:  viperCfg,
+		Enforcer:  enforcer,
 	}
 	config.Bootstrap(&testCfg)
 

@@ -3,10 +3,12 @@ package config
 import (
 	"store-api/database"
 	"store-api/internal/delivery/http/controller"
+	"store-api/internal/delivery/http/middleware"
 	"store-api/internal/delivery/http/route"
 	"store-api/internal/repository"
 	"store-api/internal/service"
 
+	"github.com/casbin/casbin/v2"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
@@ -20,14 +22,16 @@ type ConfigBootstrap struct {
 	Logger    *logrus.Logger
 	DB        *gorm.DB
 	Validator *validator.Validate
+	Enforcer  *casbin.Enforcer
 }
 
 func Bootstrap(cfg *ConfigBootstrap) {
 	repositories := repository.Setup()
 	services := service.Setup(cfg.ViperCfg, cfg.DB, cfg.Validator, cfg.Logger, repositories)
 	controllers := controller.Setup(cfg.Logger, services)
-	router := route.NewRouter(cfg.App, controllers)
+	middewares := middleware.Setup(cfg.ViperCfg, cfg.Validator, cfg.Logger, cfg.Enforcer, services)
 
+	router := route.NewRouter(cfg.App, controllers, middewares)
 	router.Setup()
 
 	if err := database.DropTable(cfg.DB); err != nil {
