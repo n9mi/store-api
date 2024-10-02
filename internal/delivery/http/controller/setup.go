@@ -16,6 +16,6 @@ type Controllers struct {
 func Setup(logger *logrus.Logger, services *service.Services) *Controllers {
 	return &Controllers{
 		AuthController:    auth.NewAuthController(logger, services),
-		ProductController: customer.NewProductController(),
+		ProductController: customer.NewProductController(logger, services),
 	}
 }

@@ -9,6 +9,9 @@ type Product struct {
 	Description string
 	PriceIdr    float64
 	CategoryID  string
+	Category    Category
 	StoreID     string
+	Store       Store
+	Stock       int
 	OrderItems  []OrderItem `gorm:"primaryKey:ProductID"`
 }

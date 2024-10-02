@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -16,11 +17,11 @@ func newRequest(method string, url string, requestBody string) *http.Request {
 	return request
 }
 
-// func newRequestWithToken(method string, url string, requestBody string, token string) *http.Request {
-// 	request := newRequest(method, url, requestBody)
-// 	bearerAuth := fmt.Sprintf("Bearer %s", token)
+func newRequestWithToken(method string, url string, requestBody string, token string) *http.Request {
+	request := newRequest(method, url, requestBody)
+	bearerAuth := fmt.Sprintf("Bearer %s", token)
 
-// 	request.Header.Add("Authorization", bearerAuth)
+	request.Header.Add("Authorization", bearerAuth)
 
-// 	return request
-// }
+	return request
+}

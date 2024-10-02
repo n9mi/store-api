@@ -234,6 +234,7 @@ func SeedProducts(db *gorm.DB, repositories *repository.Repositories, categories
 					Name:        util.GenerateRandomString(5),
 					Description: util.GenerateRandomString(20),
 					PriceIdr:    float64(rand.Intn(99)+1) * 1000,
+					Stock:       rand.Intn(99) + 1,
 					CategoryID:  c.ID,
 					StoreID:     s.ID,
 				}

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"store-api/internal/dto"
 	"store-api/internal/repository"
 	"time"
@@ -79,6 +80,10 @@ func (s *JWTServiceImpl) parseJWTToken(key string, token string) (*dto.AuthDTO, 
 		return []byte(key), nil
 	})
 	if err != nil {
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			s.Logger.Warnf("expired token : %+v", err)
+			return nil, fiber.NewError(fiber.StatusUnauthorized, "expired_token")
+		}
 		s.Logger.Warnf("failed to parse token : %+v", err)
 		return nil, err
 	}

@@ -11,11 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	registerURL = "/api/v1/auth/register"
-	loginURL    = "/api/v1/auth/login"
-)
-
 func TestRegister(t *testing.T) {
 	testItems := map[string]testItem{
 		"register_success": {
@@ -35,9 +30,9 @@ func TestRegister(t *testing.T) {
 			"response_status":  "BAD_REQUEST",
 		},
 		"register_duplicate": {
-			"request_name":     validCustomer["name"],
-			"request_email":    validCustomer["email"],
-			"request_password": validCustomer["password"],
+			"request_name":     existingCustomer["name"],
+			"request_email":    existingCustomer["email"],
+			"request_password": existingCustomer["password"],
 			"request_as_role":  "customer",
 			"response_code":    fiber.StatusConflict,
 			"response_status":  "CONFLICT",
@@ -60,7 +55,7 @@ func TestRegister(t *testing.T) {
 			responseBodyByte, err := io.ReadAll(response.Body)
 			require.Nil(t, err)
 
-			responseBody := new(testResponse[any])
+			responseBody := new(dto.Response[any])
 			err = json.Unmarshal(responseBodyByte, responseBody)
 			require.Nil(t, err)
 
@@ -117,7 +112,7 @@ func TestLogin(t *testing.T) {
 			responseBodyByte, err := io.ReadAll(response.Body)
 			require.Nil(t, err)
 
-			responseBody := new(testResponse[dto.LoginDTO])
+			responseBody := new(dto.Response[dto.LoginDTO])
 			err = json.Unmarshal(responseBodyByte, responseBody)
 			require.Nil(t, err)
 
