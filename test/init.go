@@ -34,6 +34,13 @@ var ExistingCustomer = map[string]string{
 	"token":    "",
 }
 
+var ExistingMerchant = map[string]string{
+	"name":     "Merchant 1",
+	"email":    "merchant1@test.com",
+	"password": "password",
+	"token":    "",
+}
+
 func SetupAuthenticatedCustomer() {
 	requestBody := fmt.Sprintf(`{"email":"%s","password":"%s","as_role":"%s"}`,
 		ExistingCustomer["email"],
@@ -47,6 +54,21 @@ func SetupAuthenticatedCustomer() {
 	json.Unmarshal(responseBodyByte, responseBody)
 
 	ExistingCustomer["token"] = responseBody.Data.AccessToken
+}
+
+func SetupAuthenticatedMerchant() {
+	requestBody := fmt.Sprintf(`{"email":"%s","password":"%s","as_role":"%s"}`,
+		ExistingMerchant["email"],
+		ExistingMerchant["password"],
+		"merchant")
+	request := NewRequest(fiber.MethodPost, LoginURL, requestBody)
+
+	response, _ := TestCfg.App.Test(request)
+	responseBodyByte, _ := io.ReadAll(response.Body)
+	responseBody := new(dto.Response[dto.LoginDTO])
+	json.Unmarshal(responseBodyByte, responseBody)
+
+	ExistingMerchant["token"] = responseBody.Data.AccessToken
 }
 
 func init() {
@@ -74,4 +96,5 @@ func init() {
 	config.Bootstrap(&TestCfg)
 
 	SetupAuthenticatedCustomer()
+	SetupAuthenticatedMerchant()
 }

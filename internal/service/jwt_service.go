@@ -84,6 +84,11 @@ func (s *JWTServiceImpl) parseJWTToken(key string, token string) (*dto.AuthDTO, 
 			s.Logger.Warnf("expired token : %+v", err)
 			return nil, fiber.NewError(fiber.StatusUnauthorized, "expired_token")
 		}
+		if errors.Is(err, jwt.ErrTokenMalformed) {
+			s.Logger.Warnf("malformed token : %+v", err)
+			return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid_token")
+		}
+
 		s.Logger.Warnf("failed to parse token : %+v", err)
 		return nil, err
 	}

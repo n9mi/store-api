@@ -27,6 +27,6 @@ func Setup(viperCfg *viper.Viper,
 		AuthService:            NewAuthService(db, validator, logger, JWTService, repositories),
 		JWTService:             JWTService,
 		ProductService:         NewProductService(db, logger, repositories),
-		CustomerAddressService: NewCustomerAddressService(db, logger, *repositories),
+		CustomerAddressService: NewCustomerAddressService(db, logger, validator, *repositories),
 	}
 }

@@ -20,3 +20,8 @@ func (r *CustomerAddressRepository) FindByUserID(db *gorm.DB, userID string) ([]
 
 	return custAddresses, err
 }
+
+// set default as 'false' for all address
+func (r *CustomerAddressRepository) SetDefaultToFalseByUserID(db *gorm.DB, userID string) error {
+	return db.Model(new(entity.CustomerAddress)).Where("user_id = ?", userID).Update("is_default", false).Error
+}
