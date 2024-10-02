@@ -15,9 +15,9 @@ import (
 
 func TestCustomer_Products(t *testing.T) {
 	var product entity.Product
-	testCfg.DB.Preload("Category").Preload("Store").First(&product)
+	TestCfg.DB.Preload("Category").Preload("Store").First(&product)
 
-	testItems := map[string]testItem{
+	testItems := map[string]TestItem{
 		"get_all_success_query": {
 			"query_name":            product.Name,
 			"query_store_id":        product.StoreID,
@@ -68,9 +68,9 @@ func TestCustomer_Products(t *testing.T) {
 				}
 			}
 			queryUrl = queryUrl[:len(queryUrl)-1] // remove trailing &
-			request := newRequestWithToken(fiber.MethodGet, customerProductURL+queryUrl, "", existingCustomer["token"])
+			request := NewRequestWithToken(fiber.MethodGet, CustomerProductURL+queryUrl, "", ExistingCustomer["token"])
 
-			response, err := testCfg.App.Test(request)
+			response, err := TestCfg.App.Test(request)
 			require.Nil(t, err)
 			require.Equal(t, testItem["response_code"], response.StatusCode)
 
@@ -80,9 +80,6 @@ func TestCustomer_Products(t *testing.T) {
 			responseBody := new(dto.Response[[]dto.ProductItemDTO])
 			err = json.Unmarshal(responseBodyByte, responseBody)
 			require.Nil(t, err)
-
-			fmt.Println(customerProductURL + queryUrl)
-			fmt.Println(len(responseBody.Data))
 
 			require.Equal(t, testItem["response_status"], responseBody.Status)
 			require.Equal(t, testItem["response_current_page"], responseBody.Pagination.CurrentPage)

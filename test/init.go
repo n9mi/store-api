@@ -10,23 +10,24 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-var testCfg config.ConfigBootstrap
+var TestCfg config.ConfigBootstrap
 
-type testItem map[string]interface{}
+type TestItem map[string]interface{}
 
 const (
-	registerURL        = "/api/v1/auth/register"
-	loginURL           = "/api/v1/auth/login"
-	customerProductURL = "/api/v1/customer/products"
+	RegisterURL        = "/api/v1/auth/register"
+	LoginURL           = "/api/v1/auth/login"
+	CustomerProductURL = "/api/v1/customer/products"
+	CustomerAddressURL = "/api/v1/customer/addresses"
 )
 
-var validCustomer = map[string]any{
+var ValidCustomer = map[string]any{
 	"name":     "test customer",
 	"email":    "customer@test.com",
 	"password": "password",
 }
 
-var existingCustomer = map[string]string{
+var ExistingCustomer = map[string]string{
 	"name":     "Customer 1",
 	"email":    "customer1@test.com",
 	"password": "password",
@@ -35,17 +36,17 @@ var existingCustomer = map[string]string{
 
 func SetupAuthenticatedCustomer() {
 	requestBody := fmt.Sprintf(`{"email":"%s","password":"%s","as_role":"%s"}`,
-		existingCustomer["email"],
-		existingCustomer["password"],
+		ExistingCustomer["email"],
+		ExistingCustomer["password"],
 		"customer")
-	request := newRequest(fiber.MethodPost, loginURL, requestBody)
+	request := NewRequest(fiber.MethodPost, LoginURL, requestBody)
 
-	response, _ := testCfg.App.Test(request)
+	response, _ := TestCfg.App.Test(request)
 	responseBodyByte, _ := io.ReadAll(response.Body)
 	responseBody := new(dto.Response[dto.LoginDTO])
 	json.Unmarshal(responseBodyByte, responseBody)
 
-	existingCustomer["token"] = responseBody.Data.AccessToken
+	ExistingCustomer["token"] = responseBody.Data.AccessToken
 }
 
 func init() {
@@ -62,7 +63,7 @@ func init() {
 	validator := config.NewValidator(viperCfg)
 	enforcer := config.NewTestEnforcer(logger)
 
-	testCfg = config.ConfigBootstrap{
+	TestCfg = config.ConfigBootstrap{
 		App:       app,
 		Logger:    logger,
 		DB:        db,
@@ -70,7 +71,7 @@ func init() {
 		ViperCfg:  viperCfg,
 		Enforcer:  enforcer,
 	}
-	config.Bootstrap(&testCfg)
+	config.Bootstrap(&TestCfg)
 
 	SetupAuthenticatedCustomer()
 }

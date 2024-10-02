@@ -12,11 +12,11 @@ import (
 )
 
 func TestRegister(t *testing.T) {
-	testItems := map[string]testItem{
+	testItems := map[string]TestItem{
 		"register_success": {
-			"request_name":     validCustomer["name"],
-			"request_email":    validCustomer["email"],
-			"request_password": validCustomer["password"],
+			"request_name":     ValidCustomer["name"],
+			"request_email":    ValidCustomer["email"],
+			"request_password": ValidCustomer["password"],
 			"request_as_role":  "customer",
 			"response_code":    fiber.StatusOK,
 			"response_status":  "SUCCESS",
@@ -30,9 +30,9 @@ func TestRegister(t *testing.T) {
 			"response_status":  "BAD_REQUEST",
 		},
 		"register_duplicate": {
-			"request_name":     existingCustomer["name"],
-			"request_email":    existingCustomer["email"],
-			"request_password": existingCustomer["password"],
+			"request_name":     ExistingCustomer["name"],
+			"request_email":    ExistingCustomer["email"],
+			"request_password": ExistingCustomer["password"],
 			"request_as_role":  "customer",
 			"response_code":    fiber.StatusConflict,
 			"response_status":  "CONFLICT",
@@ -46,9 +46,9 @@ func TestRegister(t *testing.T) {
 				testItem["request_email"],
 				testItem["request_password"],
 				testItem["request_as_role"])
-			request := newRequest(fiber.MethodPost, registerURL, requestBody)
+			request := NewRequest(fiber.MethodPost, RegisterURL, requestBody)
 
-			response, err := testCfg.App.Test(request)
+			response, err := TestCfg.App.Test(request)
 			require.Nil(t, err)
 			require.Equal(t, testItem["response_code"], response.StatusCode)
 
@@ -66,10 +66,10 @@ func TestRegister(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
-	testItems := map[string]testItem{
+	testItems := map[string]TestItem{
 		"login_success": {
-			"request_email":    validCustomer["email"],
-			"request_password": validCustomer["password"],
+			"request_email":    ValidCustomer["email"],
+			"request_password": ValidCustomer["password"],
 			"request_as_role":  "customer",
 			"response_code":    fiber.StatusOK,
 			"response_status":  "SUCCESS",
@@ -82,8 +82,8 @@ func TestLogin(t *testing.T) {
 			"response_status":  "BAD_REQUEST",
 		},
 		"login_unauthorized__empty_as_role": {
-			"request_email":    validCustomer["email"],
-			"request_password": validCustomer["password"],
+			"request_email":    ValidCustomer["email"],
+			"request_password": ValidCustomer["password"],
 			"request_as_role":  "",
 			"response_code":    fiber.StatusUnauthorized,
 			"response_status":  "UNAUTHORIZED",
@@ -103,9 +103,9 @@ func TestLogin(t *testing.T) {
 				testItem["request_email"],
 				testItem["request_password"],
 				testItem["request_as_role"])
-			request := newRequest(fiber.MethodPost, loginURL, requestBody)
+			request := NewRequest(fiber.MethodPost, LoginURL, requestBody)
 
-			response, err := testCfg.App.Test(request)
+			response, err := TestCfg.App.Test(request)
 			require.Nil(t, err)
 			require.Equal(t, testItem["response_code"], response.StatusCode)
 

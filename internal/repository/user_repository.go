@@ -31,24 +31,24 @@ func (r *UserRepository) EmailExists(db *gorm.DB, email string) (bool, error) {
 	return count == 1, err
 }
 
-func (r *UserRepository) AssignRole(tx *gorm.DB, user *entity.User, role *entity.Role) error {
-	return tx.Model(user).Association("Roles").Append(role)
+func (r *UserRepository) AssignRole(db *gorm.DB, user *entity.User, role *entity.Role) error {
+	return db.Model(user).Association("Roles").Append(role)
 }
 
-func (r *UserRepository) FindByRoles(tx *gorm.DB, roleID string) ([]entity.User, error) {
+func (r *UserRepository) FindByRoles(db *gorm.DB, roleID string) ([]entity.User, error) {
 	var users []entity.User
 
-	err := tx.Model(&entity.Role{}).
+	err := db.Model(&entity.Role{}).
 		Where("roles.id = ?", roleID).
 		Association("Users").Find(&users)
 
 	return users, err
 }
 
-func (r *UserRepository) HasRole(tx *gorm.DB, userID string, roleID string) (bool, error) {
+func (r *UserRepository) HasRole(db *gorm.DB, userID string, roleID string) (bool, error) {
 	var count int
 
-	err := tx.Table("user_roles").
+	err := db.Table("user_roles").
 		Select("1").
 		Where("user_id = ?", userID).
 		Where("role_id = ?", roleID).

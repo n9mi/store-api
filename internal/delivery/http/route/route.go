@@ -45,4 +45,5 @@ func (c *Router) SetupCustomerRoute(route fiber.Router) {
 	customer := route.Group("/customer")
 	customer.Use(c.Middlewares.AuthMiddleware)
 	customer.Get("/products", c.Controllers.ProductController.GetAll)
+	customer.Get("/addresses", c.Controllers.CustomerAddressController.GetAll)
 }

@@ -9,13 +9,15 @@ import (
 )
 
 type Controllers struct {
-	AuthController    *auth.AuthController
-	ProductController *customer.ProductController
+	AuthController            *auth.AuthController
+	ProductController         *customer.ProductController
+	CustomerAddressController *customer.AddressController
 }
 
 func Setup(logger *logrus.Logger, services *service.Services) *Controllers {
 	return &Controllers{
-		AuthController:    auth.NewAuthController(logger, services),
-		ProductController: customer.NewProductController(logger, services),
+		AuthController:            auth.NewAuthController(logger, services),
+		ProductController:         customer.NewProductController(logger, services),
+		CustomerAddressController: customer.NewAddressController(logger, services),
 	}
 }
