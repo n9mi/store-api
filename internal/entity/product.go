@@ -14,4 +14,5 @@ type Product struct {
 	Store       Store
 	Stock       int
 	OrderItems  []OrderItem `gorm:"primaryKey:ProductID"`
+	CartItems   []CartItem  `gorm:"primaryKey:ProductID"`
 }

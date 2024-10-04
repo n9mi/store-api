@@ -12,6 +12,7 @@ type Controllers struct {
 	AuthController            *auth.AuthController
 	ProductController         *customer.ProductController
 	CustomerAddressController *customer.AddressController
+	CartController            *customer.CartController
 }
 
 func Setup(logger *logrus.Logger, services *service.Services) *Controllers {
@@ -19,5 +20,6 @@ func Setup(logger *logrus.Logger, services *service.Services) *Controllers {
 		AuthController:            auth.NewAuthController(logger, services),
 		ProductController:         customer.NewProductController(logger, services),
 		CustomerAddressController: customer.NewAddressController(logger, services),
+		CartController:            customer.NewCartController(logger, services),
 	}
 }

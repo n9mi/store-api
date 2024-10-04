@@ -10,7 +10,7 @@ import (
 )
 
 type ProductService interface {
-	FindAll(ctx context.Context, request *dto.FindAndSearchProductRequest) ([]dto.ProductItemDTO, *dto.Pagination, error)
+	FindAll(ctx context.Context, request *dto.FindAndSearchProductRequest) ([]dto.ProductDTO, *dto.Pagination, error)
 }
 
 type ProductServiceImpl struct {
@@ -27,7 +27,7 @@ func NewProductService(db *gorm.DB, logger *logrus.Logger, repositories *reposit
 	}
 }
 
-func (s *ProductServiceImpl) FindAll(ctx context.Context, request *dto.FindAndSearchProductRequest) ([]dto.ProductItemDTO, *dto.Pagination, error) {
+func (s *ProductServiceImpl) FindAll(ctx context.Context, request *dto.FindAndSearchProductRequest) ([]dto.ProductDTO, *dto.Pagination, error) {
 	res, pagination, err := s.ProductRepository.FindAll(s.DB, *request)
 	if err != nil {
 		s.Logger.Warnf("error getting products : %+v", err)

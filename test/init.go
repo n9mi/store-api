@@ -6,6 +6,7 @@ import (
 	"io"
 	"store-api/config"
 	"store-api/internal/dto"
+	"store-api/internal/entity"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -15,13 +16,14 @@ var TestCfg config.ConfigBootstrap
 type TestItem map[string]interface{}
 
 const (
-	RegisterURL        = "/api/v1/auth/register"
-	LoginURL           = "/api/v1/auth/login"
-	CustomerProductURL = "/api/v1/customer/products"
-	CustomerAddressURL = "/api/v1/customer/addresses"
+	RegisterURL           = "/api/v1/auth/register"
+	LoginURL              = "/api/v1/auth/login"
+	CustomerProductURL    = "/api/v1/customer/products"
+	CustomerAddressURL    = "/api/v1/customer/addresses"
+	CustomerInsertCartURL = "/api/v1/customer/cart"
 )
 
-var ValidCustomer = map[string]any{
+var ValidCustomer = map[string]string{
 	"name":     "test customer",
 	"email":    "customer@test.com",
 	"password": "password",
@@ -39,6 +41,7 @@ var ExistingMerchant = map[string]string{
 	"email":    "merchant1@test.com",
 	"password": "password",
 	"token":    "",
+	"userID":   "",
 }
 
 func SetupAuthenticatedCustomer() {
@@ -97,4 +100,10 @@ func init() {
 
 	SetupAuthenticatedCustomer()
 	SetupAuthenticatedMerchant()
+
+	var curUser entity.User
+	if err := TestCfg.DB.First(&curUser, "email = ?", ExistingCustomer["email"]).Error; err != nil {
+		logger.Fatalf("failed to get existing customer : %+v", err)
+	}
+	ExistingCustomer["userID"] = curUser.ID
 }

@@ -17,8 +17,8 @@ func NewProductRepository() *ProductRepository {
 	return new(ProductRepository)
 }
 
-func (r *ProductRepository) FindAll(db *gorm.DB, request dto.FindAndSearchProductRequest) ([]dto.ProductItemDTO, *dto.Pagination, error) {
-	var productItems []dto.ProductItemDTO
+func (r *ProductRepository) FindAll(db *gorm.DB, request dto.FindAndSearchProductRequest) ([]dto.ProductDTO, *dto.Pagination, error) {
+	var productItems []dto.ProductDTO
 
 	db = db.Model(new(entity.Product)).
 		Select(`products.id as id,

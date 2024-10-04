@@ -48,7 +48,7 @@ func (ct *ProductController) GetAll(c *fiber.Ctx) error {
 		return err
 	}
 
-	response := dto.Response[[]dto.ProductItemDTO]{
+	response := dto.Response[[]dto.ProductDTO]{
 		Status: "SUCCESS",
 		Messages: map[string]string{
 			"_success": "success getting categories",

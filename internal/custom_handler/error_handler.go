@@ -51,8 +51,8 @@ func NewCustomErrorHandler() func(*fiber.Ctx, error) error {
 					defResp.Status = "UNAUTHORIZED"
 				case fiber.StatusForbidden:
 					defResp.Status = "FORBIDDEN"
-				default:
-					defResp.Status = "FAILED"
+				case fiber.StatusNotFound:
+					defResp.Status = "NOT_FOUND"
 				}
 				defResp.Messages["_error"] = errConv.Message
 			} else {

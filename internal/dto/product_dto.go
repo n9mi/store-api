@@ -11,7 +11,7 @@ type FindAndSearchProductRequest struct {
 	SortByPriceLowest  bool
 }
 
-type ProductItemDTO struct {
+type ProductDTO struct {
 	ID       string               `json:"id"`
 	Name     string               `json:"name"`
 	Stock    int                  `json:"stock"`

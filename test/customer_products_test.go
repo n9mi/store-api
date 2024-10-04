@@ -77,7 +77,7 @@ func TestCustomer_Products(t *testing.T) {
 			responseBodyByte, err := io.ReadAll(response.Body)
 			require.Nil(t, err)
 
-			responseBody := new(dto.Response[[]dto.ProductItemDTO])
+			responseBody := new(dto.Response[[]dto.ProductDTO])
 			err = json.Unmarshal(responseBodyByte, responseBody)
 			require.Nil(t, err)
 

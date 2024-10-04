@@ -43,10 +43,18 @@ func CreateTable(db *gorm.DB) error {
 		return err
 	}
 
+	if err := db.AutoMigrate(&entity.CartItem{}); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func DropTable(db *gorm.DB) error {
+	if err := db.Migrator().DropTable(&entity.CartItem{}); err != nil {
+		return err
+	}
+
 	if err := db.Migrator().DropTable(&entity.OrderItem{}); err != nil {
 		return err
 	}

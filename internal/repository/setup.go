@@ -10,6 +10,7 @@ type Repositories struct {
 	ProductRepository         *ProductRepository
 	OrderRepository           *OrderRepository
 	OrderItemRepository       *OrderItemRepository
+	CartItemRepository        *CartItemRepository
 }
 
 func Setup() *Repositories {
@@ -23,5 +24,6 @@ func Setup() *Repositories {
 		ProductRepository:         NewProductRepository(),
 		OrderRepository:           NewOrderRepository(),
 		OrderItemRepository:       NewOrderItemRepository(),
+		CartItemRepository:        NewCartItemRepository(),
 	}
 }

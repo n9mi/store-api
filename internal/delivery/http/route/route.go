@@ -48,4 +48,6 @@ func (c *Router) SetupCustomerRoute(route fiber.Router) {
 
 	customer.Get("/addresses", c.Controllers.CustomerAddressController.GetAll)
 	customer.Post("/addresses", c.Controllers.CustomerAddressController.Create)
+
+	customer.Post("/cart", c.Controllers.CartController.Insert)
 }
