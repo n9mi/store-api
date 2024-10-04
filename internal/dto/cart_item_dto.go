@@ -8,7 +8,8 @@ type CartItemRequest struct {
 }
 
 type CartItemResponse struct {
-	Product   ProductDTO `json:"product"`
-	Quantity  int        `json:"quantity"`
-	CreatedAt time.Time
+	Product    ProductDTO `json:"product" gorm:"embedded;embeddedPrefix:product_"`
+	Quantity   int        `json:"quantity"`
+	TotalPrice float64    `json:"total_price"`
+	CreatedAt  time.Time
 }

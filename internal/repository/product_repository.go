@@ -18,7 +18,7 @@ func NewProductRepository() *ProductRepository {
 }
 
 func (r *ProductRepository) FindAll(db *gorm.DB, request dto.FindAndSearchProductRequest) ([]dto.ProductDTO, *dto.Pagination, error) {
-	var productItems []dto.ProductDTO
+	var product []dto.ProductDTO
 
 	db = db.Model(new(entity.Product)).
 		Select(`products.id as id,
@@ -68,9 +68,32 @@ func (r *ProductRepository) FindAll(db *gorm.DB, request dto.FindAndSearchProduc
 	var paginationRes dto.Pagination
 	db = db.Scopes(util.Paginate[entity.Product](db, request.Page, request.PageSize, &paginationRes))
 
-	if err := db.Scan(&productItems).Error; err != nil {
+	if err := db.Scan(&product).Error; err != nil {
 		return nil, nil, err
 	}
 
-	return productItems, &paginationRes, nil
+	return product, &paginationRes, nil
+}
+
+func (r *ProductRepository) FindByIDWithAssociation(db *gorm.DB, productID string) (*dto.ProductDTO, error) {
+	product := new(dto.ProductDTO)
+
+	if err := db.Model(new(entity.Product)).
+		Select(`products.id as id,
+			products.name as name,
+			products.stock as stock,
+			products.price_idr as price,
+			categories.id as category_id,
+			categories.name as category_name,
+			stores.id as store_id,
+			stores.name as store_name,
+			stores.city as store_city`).
+		Joins("inner join categories on categories.id = products.category_id").
+		Joins("inner join stores on stores.id = products.store_id").
+		Where("products.id = ?", productID).
+		Scan(product).Error; err != nil {
+		return nil, err
+	}
+
+	return product, nil
 }

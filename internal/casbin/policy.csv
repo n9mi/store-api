@@ -2,3 +2,4 @@ p, customer, /api/v1/customer/products, GET
 p, customer, /api/v1/customer/addresses, GET
 p, customer, /api/v1/customer/addresses, POST
 p, customer, /api/v1/customer/cart, POST
+p, customer, /api/v1/customer/cart, GET

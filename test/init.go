@@ -16,11 +16,11 @@ var TestCfg config.ConfigBootstrap
 type TestItem map[string]interface{}
 
 const (
-	RegisterURL           = "/api/v1/auth/register"
-	LoginURL              = "/api/v1/auth/login"
-	CustomerProductURL    = "/api/v1/customer/products"
-	CustomerAddressURL    = "/api/v1/customer/addresses"
-	CustomerInsertCartURL = "/api/v1/customer/cart"
+	RegisterURL        = "/api/v1/auth/register"
+	LoginURL           = "/api/v1/auth/login"
+	CustomerProductURL = "/api/v1/customer/products"
+	CustomerAddressURL = "/api/v1/customer/addresses"
+	CustomerCartURL    = "/api/v1/customer/cart"
 )
 
 var ValidCustomer = map[string]string{

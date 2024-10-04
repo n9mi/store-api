@@ -7,6 +7,7 @@ import (
 	"store-api/internal/dto"
 	"store-api/internal/entity"
 	"testing"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/require"
@@ -60,7 +61,7 @@ func TestCustomerCartInsert(t *testing.T) {
 			requestBody := fmt.Sprintf(`{"product_id":"%s","quantity":%d}`,
 				testItem["request_product_id"],
 				testItem["request_quantity"])
-			request := NewRequestWithToken(fiber.MethodPost, CustomerInsertCartURL, requestBody, ExistingCustomer["token"])
+			request := NewRequestWithToken(fiber.MethodPost, CustomerCartURL, requestBody, ExistingCustomer["token"])
 
 			response, err := TestCfg.App.Test(request)
 			require.Nil(t, err)
@@ -88,4 +89,57 @@ func TestCustomerCartInsert(t *testing.T) {
 			}
 		})
 	}
+}
+
+func deleteAllCartItems() {
+	TestCfg.DB.Where("1 = 1").Delete(new(entity.CartItem))
+}
+
+func TestCustomerGetItemsCart(t *testing.T) {
+	t.Run("cart_get_items_success", func(t *testing.T) {
+		deleteAllCartItems()
+
+		numProductLim := 5
+
+		var products []entity.Product
+		err := TestCfg.DB.Limit(numProductLim).Find(&products).Error
+		require.Nil(t, err)
+
+		cartItems := make([]entity.CartItem, numProductLim)
+		for i := range 5 {
+			cartItems[i] = entity.CartItem{
+				UserID:    ExistingCustomer["userID"],
+				ProductID: products[i].ID,
+				Quantity:  products[i].Stock,
+				CreatedAt: time.Now(),
+			}
+		}
+		err = TestCfg.DB.Create(cartItems).Error
+		require.Nil(t, err)
+
+		request := NewRequestWithToken(fiber.MethodGet, CustomerCartURL, "", ExistingCustomer["token"])
+
+		response, err := TestCfg.App.Test(request)
+		require.Nil(t, err)
+		require.Equal(t, fiber.StatusOK, response.StatusCode)
+
+		responseBodyByte, err := io.ReadAll(response.Body)
+		require.Nil(t, err)
+
+		responseBody := new(dto.Response[[]dto.CartItemResponse])
+		err = json.Unmarshal(responseBodyByte, responseBody)
+		require.Nil(t, err)
+
+		require.Equal(t, "SUCCESS", responseBody.Status)
+
+		require.True(t, len(responseBody.Messages["_success"]) > 0)
+		require.Equal(t, len(responseBody.Data), numProductLim)
+		for i := range numProductLim {
+			require.Equal(t, responseBody.Data[i].Product.ID, cartItems[i].ProductID)
+			require.Equal(t, responseBody.Data[i].Quantity, cartItems[i].Quantity)
+			require.Equal(t, responseBody.Data[i].TotalPrice, float64(cartItems[i].Quantity)*products[i].PriceIdr)
+		}
+
+		deleteAllCartItems()
+	})
 }

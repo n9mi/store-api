@@ -17,6 +17,7 @@ import (
 
 type CartItemService interface {
 	Create(ctx context.Context, request *dto.CartItemRequest, userID string) error
+	FindAll(ctx context.Context, userID string) ([]dto.CartItemResponse, error)
 }
 
 type CartItemServiceImpl struct {
@@ -35,6 +36,10 @@ func NewCartServiceImpl(db *gorm.DB, logger *logrus.Logger, validator *validator
 		CartItemRepository: repositories.CartItemRepository,
 		ProductRepository:  repositories.ProductRepository,
 	}
+}
+
+func (s *CartItemServiceImpl) FindAll(ctx context.Context, userID string) ([]dto.CartItemResponse, error) {
+	return s.CartItemRepository.FindByUserIDWithAssociation(s.DB, userID)
 }
 
 func (s *CartItemServiceImpl) Create(ctx context.Context, request *dto.CartItemRequest, userID string) error {
