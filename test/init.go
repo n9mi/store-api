@@ -34,6 +34,7 @@ var ExistingCustomer = map[string]string{
 	"email":    "customer1@test.com",
 	"password": "password",
 	"token":    "",
+	"userID":   "",
 }
 
 var ExistingMerchant = map[string]string{

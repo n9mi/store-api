@@ -68,3 +68,23 @@ func (ct *CartController) Insert(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(resp)
 }
+
+func (ct *CartController) Delete(c *fiber.Ctx) error {
+	userData, ok := c.Locals("AUTH_DATA").(*dto.AuthDTO)
+	if !ok {
+		ct.Logger.Warnf("failed to parse auth data")
+		return fiber.NewError(fiber.StatusInternalServerError, "something wrong")
+	}
+
+	if err := ct.CartItemService.Delete(c.UserContext(), c.Params("productId"), userData.UserID); err != nil {
+		return err
+	}
+
+	resp := dto.Response[any]{
+		Status: "SUCCESS",
+		Messages: map[string]string{
+			"_success": "success to deleting product from cart",
+		},
+	}
+	return c.Status(fiber.StatusOK).JSON(resp)
+}

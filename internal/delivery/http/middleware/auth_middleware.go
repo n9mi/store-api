@@ -42,7 +42,7 @@ func NewAuthMiddleware(viperCfg *viper.Viper,
 			return fiber.NewError(fiber.StatusInternalServerError, "something wrong")
 		}
 		if !enforce {
-			log.Warn("forbidden : current user role does'nt match")
+			log.Warn("forbidden : current user role doesn't match")
 			return fiber.NewError(fiber.StatusForbidden, "invalid_user_role")
 		}
 

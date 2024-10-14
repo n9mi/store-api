@@ -18,6 +18,7 @@ import (
 type CartItemService interface {
 	Create(ctx context.Context, request *dto.CartItemRequest, userID string) error
 	FindAll(ctx context.Context, userID string) ([]dto.CartItemResponse, error)
+	Delete(ctx context.Context, productID string, userID string) error
 }
 
 type CartItemServiceImpl struct {
@@ -81,4 +82,21 @@ func (s *CartItemServiceImpl) Create(ctx context.Context, request *dto.CartItemR
 	}
 
 	return tx.Commit().Error
+}
+
+func (s *CartItemServiceImpl) Delete(ctx context.Context, productID string, userID string) error {
+	if ok, err := s.CartItemRepository.IsExistsByUserIDAndProductID(s.DB, userID, productID); err != nil {
+		s.Logger.Warnf("failed to delete product with id %s into cart : %+v", productID, err)
+		return err
+	} else if !ok {
+		s.Logger.Warnf("product with id %s is can't be found in user cart", productID)
+		return fiber.NewError(fiber.StatusNotFound, "product doesn't exists in cart")
+	}
+
+	if err := s.CartItemRepository.Delete(s.DB, userID, productID); err != nil {
+		s.Logger.Warnf("failed to delete product with id %s into cart : %+v", productID, err)
+		return err
+	}
+
+	return nil
 }

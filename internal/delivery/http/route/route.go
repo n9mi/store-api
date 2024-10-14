@@ -51,4 +51,5 @@ func (c *Router) SetupCustomerRoute(route fiber.Router) {
 
 	customer.Get("/cart", c.Controllers.CartController.GetItems)
 	customer.Post("/cart", c.Controllers.CartController.Insert)
+	customer.Delete("/cart/:productId", c.Controllers.CartController.Delete)
 }
