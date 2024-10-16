@@ -24,6 +24,10 @@ func (r *BaseRepository[T]) Create(db *gorm.DB, e *T) error {
 	return db.Create(e).Error
 }
 
+func (r *BaseRepository[T]) CreateMany(db *gorm.DB, e []*T) error {
+	return db.Create(e).Error
+}
+
 func (r *BaseRepository[T]) Update(db *gorm.DB, e *T, ID any) error {
 	return db.Model(e).Updates(e).Error
 }

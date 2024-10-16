@@ -2,7 +2,7 @@ package util
 
 import "math/rand"
 
-var letters []byte = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+var letters []byte = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890")
 var numLetters = len(letters)
 
 func GenerateRandomString(length int) string {

@@ -15,6 +15,7 @@ type Services struct {
 	ProductService         ProductService
 	CustomerAddressService CustomerAddressService
 	CartItemService        CartItemService
+	OrderService           OrderService
 }
 
 func Setup(viperCfg *viper.Viper,
@@ -28,7 +29,8 @@ func Setup(viperCfg *viper.Viper,
 		AuthService:            NewAuthService(db, validator, logger, JWTService, repositories),
 		JWTService:             JWTService,
 		ProductService:         NewProductService(db, logger, repositories),
-		CustomerAddressService: NewCustomerAddressService(db, logger, validator, *repositories),
+		CustomerAddressService: NewCustomerAddressService(db, logger, validator, repositories),
 		CartItemService:        NewCartServiceImpl(db, logger, validator, repositories),
+		OrderService:           NewOrderServiceImpl(db, logger, validator, repositories),
 	}
 }

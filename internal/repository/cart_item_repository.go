@@ -81,3 +81,9 @@ func (r *CartItemRepository) Delete(db *gorm.DB, userID string, productID string
 		Delete(new(entity.CartItem)).
 		Error
 }
+
+func (r *CartItemRepository) Empty(db *gorm.DB, userID string) error {
+	return db.Where("user_id = ?", userID).
+		Delete(new(entity.CartItem)).
+		Error
+}

@@ -25,7 +25,7 @@ type CustomerAddressServiceImpl struct {
 	CustomerAddressRepsitory *repository.CustomerAddressRepository
 }
 
-func NewCustomerAddressService(db *gorm.DB, logger *logrus.Logger, validator *validator.Validate, repositories repository.Repositories) *CustomerAddressServiceImpl {
+func NewCustomerAddressService(db *gorm.DB, logger *logrus.Logger, validator *validator.Validate, repositories *repository.Repositories) *CustomerAddressServiceImpl {
 	return &CustomerAddressServiceImpl{
 		DB:                       db,
 		Logger:                   logger,
