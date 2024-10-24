@@ -12,12 +12,9 @@ func main() {
 	}
 	app := config.NewFiber(viperCfg)
 	logger := config.NewLogrus(viperCfg)
-	db, err := config.NewDatabase(viperCfg, logger)
-	if err != nil {
-		logger.Fatalf("failed to create database : %+v", err)
-	}
+	db := config.NewDatabase(viperCfg, logger)
 	validator := config.NewValidator(viperCfg)
-	enforcer := config.NewEnforcer(logger)
+	enforcer := config.NewEnforcer(viperCfg, logger)
 
 	cfg := config.ConfigBootstrap{
 		App:       app,

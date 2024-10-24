@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func NewDatabase(viperCfg *viper.Viper, log *logrus.Logger) (*gorm.DB, error) {
+func NewDatabase(viperCfg *viper.Viper, log *logrus.Logger) *gorm.DB {
 	dbHost := viperCfg.GetString("DB_HOST")
 	dbUser := viperCfg.GetString("DB_USER")
 	dbPassword := viperCfg.GetString("DB_PASSWORD")
@@ -39,7 +39,11 @@ func NewDatabase(viperCfg *viper.Viper, log *logrus.Logger) (*gorm.DB, error) {
 		}),
 	})
 
-	return db, err
+	if err != nil {
+		log.Fatalf("failed to create database : %+v", err)
+	}
+
+	return db
 }
 
 type logrusWriter struct {

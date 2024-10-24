@@ -18,6 +18,8 @@ WORKDIR /app
 
 COPY --from=build /app/store-api .
 
+COPY --from=build /app/internal/casbin ./casbin
+
 RUN apk --no-cache add ca-certificates tzdata
 
 EXPOSE 3000
