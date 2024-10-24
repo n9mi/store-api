@@ -165,7 +165,7 @@ func TestCustomerDeleteItemCart(t *testing.T) {
 			"response_status":    "SUCCESS",
 		},
 		"cart_delete_product_not_found": {
-			"request_product_id": product.ID,
+			"request_product_id": "randomID",
 			"response_code":      fiber.StatusNotFound,
 			"response_status":    "NOT_FOUND",
 		},
