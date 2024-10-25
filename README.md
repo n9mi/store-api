@@ -1,5 +1,5 @@
 # store-api
-A RESTful API built with Go and PostgreSQL for simple online store application, including products catalouge and ordering. Automated testing with Github Actions are also included.
+A RESTful API built with Go and PostgreSQL for simple online store, including products catalouge and ordering. Automated testing with Github Actions are also included.
 
 ## Stack
 - [Go](https://go.dev/)
